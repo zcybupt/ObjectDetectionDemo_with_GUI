@@ -1,0 +1,6 @@
+classes= 10
+train  = /home/pjreddie/data/voc/train.txt
+valid  = /home/pjreddie/data/voc/2007_test.txt
+names = /home/zcy/Workspace/PyCharmProjects/YOLO_GUI/NWPU/voc.names
+backup = backup
+
