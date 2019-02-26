@@ -257,7 +257,7 @@ class ObjectDetection(QtWidgets.QMainWindow):
             scores = scores.cpu().numpy()
 
             for j in range(1, self.numclass):
-                inds = np.where(scores[:, j] > 0.2)[0]  # conf > 0.6
+                inds = np.where(scores[:, j] > 0.1)[0]  # conf > 0.6
                 if inds is None:
                     continue
                 c_bboxes = boxes[inds]
