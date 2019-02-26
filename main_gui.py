@@ -1,6 +1,5 @@
 import sys
 import cv2
-import matplotlib.patches as patches
 import numpy as np
 import time
 from PyQt5 import QtWidgets, QtGui
@@ -213,13 +212,19 @@ class ObjectDetection(QtWidgets.QMainWindow):
             self.detectTimeLabel.setText('Detect Time: ' + str(end_time - start_time) + ' s')
             self.filePathLabel.setText('File Path: ' + file_path)
             for result in results:
+                print(result)
                 cv2.rectangle(img, (round(result[2][0] - result[2][2] / 2),
                                     round(result[2][1] - result[2][3] / 2),
                                     round(result[2][2]),
                                     round(result[2][3])), (255, 0, 0), 2)
-                print('类别: ', str(result[0], encoding='utf-8'), '置信度: ', result[1], '坐标: ', result[2])
+                font = cv2.FONT_HERSHEY_COMPLEX_SMALL
+                cv2.putText(img, str(result[0], encoding='utf-8'), (round(result[2][0] - result[2][2] / 2 - 5),
+                                    round(result[2][1] - result[2][3] / 2 - 5)), font, 1, (255, 0, 0), 2)
             cv2.imwrite('test_result.png', img)
         elif self.algorithm == 'rfbnet':
+            classes = ['__background__', 'aeroplane', 'ship', 'storage_tank', 'baseball_diamond',
+                       'tennis_court', 'basketball_court', 'ground_track_field',
+                       'harbor', 'bridge', 'vehicle', '', '', '', '', '', '', '', '', '', '']
             if img is None:
                 QtWidgets.QMessageBox.information(self, 'Alert', 'Please select images')
                 return
@@ -243,24 +248,23 @@ class ObjectDetection(QtWidgets.QMainWindow):
             boxes *= scale
             boxes = boxes.cpu().numpy()
             scores = scores.cpu().numpy()
+            print(scores)
 
             for j in range(1, self.numclass):
-                max_ = max(scores[:, j])
                 inds = np.where(scores[:, j] > 0.2)[0]  # conf > 0.6
                 if inds is None:
                     continue
                 c_bboxes = boxes[inds]
                 c_scores = scores[inds, j]
-                c_dets = np.hstack((c_bboxes, c_scores[:, np.newaxis])).astype(
-                    np.float32, copy=False)
+                c_dets = np.hstack((c_bboxes, c_scores[:, np.newaxis])).astype(np.float32, copy=False)
                 keep = self.rfbnet_nms_py(c_dets, 0.6)
                 c_dets = c_dets[keep, :]
                 c_bboxes = c_dets[:, :4]
+                font = cv2.FONT_HERSHEY_COMPLEX_SMALL
                 for bbox in c_bboxes:
                     cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0), 2)
-                    print(bbox)
+                    cv2.putText(img, classes[j], (int(bbox[0] - 5), int(bbox[1]) - 5), font, 1, (255, 0, 0), 2)
             cv2.imwrite('test_result.png', img)
-            print(type(img))
 
             end_time = time.time()
             self.detectTimeLabel.setText('Detect Time: ' + str(end_time - start_time) + ' s')
