@@ -131,6 +131,8 @@ class ObjectDetection(QtWidgets.QMainWindow):
         if hasattr(self, 'label'):
             self.label.leftLabel.clear()
             self.label.rightLabel.clear()
+            self.detectTimeLabel.setText('Ready')
+            self.filePathLabel.clear()
             self.label.setText('Please drag image here\nor\nPress Ctrl+O to select')
         if sender == '300 x 300' or sender == 'RFBNet 300':
             self.algorithm = 'rfbnet'
@@ -144,15 +146,20 @@ class ObjectDetection(QtWidgets.QMainWindow):
             self.algorithm = 'yolo'
             self.setWindowTitle('Object Detection Demo Program -- YOLO v1')
             print('v1')
+            # self.net = load_net('YOLO/NWPU/yolov1-voc.cfg'.encode('utf-8'),
+            #                     'weights/yolov1_NWPU.weights'.encode('utf-8'), 0)
+            # self.meta = load_meta('YOLO/NWPU/voc.data'.encode('utf-8'))
         elif sender == 'v2' or sender == 'Yolo v2':
             self.algorithm = 'yolo'
             self.setWindowTitle('Object Detection Demo Program -- YOLO v2')
-            print('v2')
+            self.net = load_net('YOLO/NWPU/yolov2-voc.cfg'.encode('utf-8'),
+                                'weights/yolov2_NWPU.weights'.encode('utf-8'), 0)
+            self.meta = load_meta('YOLO/NWPU/voc.data'.encode('utf-8'))
         elif sender == 'v3' or sender == 'Yolo v3':
             self.algorithm = 'yolo'
             self.setWindowTitle('Object Detection Demo Program -- YOLO v3')
             self.net = load_net('YOLO/NWPU/yolov3-voc.cfg'.encode('utf-8'),
-                                'weights/yolov3-NWPU.weights'.encode('utf-8'), 0)
+                                'weights/yolov3_NWPU.weights'.encode('utf-8'), 0)
             self.meta = load_meta('YOLO/NWPU/voc.data'.encode('utf-8'))
         self.dialog.close()
         print('Finished loading model!')
@@ -218,7 +225,8 @@ class ObjectDetection(QtWidgets.QMainWindow):
                                     round(result[2][3])), (255, 0, 0), 2)
                 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
                 cv2.putText(img, str(result[0], encoding='utf-8'), (round(result[2][0] - result[2][2] / 2 - 5),
-                                    round(result[2][1] - result[2][3] / 2 - 5)), font, 1, (255, 0, 0), 2)
+                                                                    round(result[2][1] - result[2][3] / 2 - 5)), font,
+                            1, (255, 0, 0), 2)
             cv2.imwrite('test_result.png', img)
         elif self.algorithm == 'rfbnet':
             classes = ['__background__', 'aeroplane', 'ship', 'storage_tank', 'baseball_diamond',
