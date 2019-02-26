@@ -194,10 +194,10 @@ class ObjectDetection(QtWidgets.QMainWindow):
                                                           r'/home/zcy/data/NWPU_VHR-10_dataset/positive_image_set',
                                                           'Image files(*.bmp *.jpg *.pbm *.pgm *.png *.ppm *.xbm *.xpm)'
                                                           ';;All files (*.*)')
-        # try:
-        self.detect_img(file_path[0].strip())
-        # except Exception as e:
-        #     QtWidgets.QMessageBox.information(self, "Alert", str(e))
+        try:
+            self.detect_img(file_path[0].strip())
+        except Exception as e:
+            QtWidgets.QMessageBox.information(self, "Alert", str(e))
 
     def detect_img(self, file_path):
         print(file_path)
@@ -212,7 +212,6 @@ class ObjectDetection(QtWidgets.QMainWindow):
             self.detectTimeLabel.setText('Detect Time: ' + str(end_time - start_time) + ' s')
             self.filePathLabel.setText('File Path: ' + file_path)
             for result in results:
-                print(result)
                 cv2.rectangle(img, (round(result[2][0] - result[2][2] / 2),
                                     round(result[2][1] - result[2][3] / 2),
                                     round(result[2][2]),
@@ -248,7 +247,6 @@ class ObjectDetection(QtWidgets.QMainWindow):
             boxes *= scale
             boxes = boxes.cpu().numpy()
             scores = scores.cpu().numpy()
-            print(scores)
 
             for j in range(1, self.numclass):
                 inds = np.where(scores[:, j] > 0.2)[0]  # conf > 0.6
