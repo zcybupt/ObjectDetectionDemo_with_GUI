@@ -1,18 +1,17 @@
-import sys
 import cv2
 import numpy as np
+import sys
 import time
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from YOLO.python.darknet import *
-
 import torch
 import torch.backends.cudnn as cudnn
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from RFBNet.data import BaseTransform, VOC_300, VOC_512
 from RFBNet.layers.functions import Detect, PriorBox
 from RFBNet.models.RFB_Net_vgg import build_net
+from YOLO.python.darknet import *
 from collections import OrderedDict
 
 
@@ -221,8 +220,9 @@ class ObjectDetection(QtWidgets.QMainWindow):
             for result in results:
                 cv2.rectangle(img, (round(result[2][0] - result[2][2] / 2),
                                     round(result[2][1] - result[2][3] / 2),
-                                    round(result[2][2]),
-                                    round(result[2][3])), (255, 0, 0), 2)
+                                    round(result[2][0] + result[2][2] / 2),
+                                    round(result[2][1] + result[2][3] / 2)),
+                              (255, 0, 0), 2)
                 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
                 cv2.putText(img, str(result[0], encoding='utf-8'), (round(result[2][0] - result[2][2] / 2 - 5),
                                                                     round(result[2][1] - result[2][3] / 2 - 5)), font,
